@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSE Department Students</title>
+
+<!-- Font Awesome for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+body { font-family: Arial, sans-serif; margin: 0; background-color: #f0f0f0; display: flex; flex-direction: column; min-height: 100vh; }
+header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; background-color: white; padding: 10px 20px; border-bottom: 1px solid #ccc; }
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo img { width: 40px; height: 40px; }
+.logo h2 { margin: 0; font-size: 18px; }
+.time { text-align: right; font-weight: bold; color: #0066cc; }
+main {
+    flex: 1;
+    text-align: center;
+    padding: 20px;
+    background-color: skyblue; /* 🌟 solid sky blue */
+}
+
+main h1 { margin: 0; color: white; }
+.search-box { margin: 20px auto; max-width: 400px; }
+.search-box input { width: 100%; padding: 10px; border-radius: 8px; border: none; font-size: 16px; }
+
+/* Center all cards */
+.cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Center all cards on the page */
+    gap: 20px;
+    padding-bottom: 30px;
+}
+
+.card { background: white; border-radius: 12px; width: 300px; padding: 20px; text-align: left; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s; }
+.card:hover { transform: scale(1.03); }
+.card img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; display:block; margin:auto; }
+.initials { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(45deg, #6a5acd, #9370db); display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: bold; color: white; margin: auto; }
+
+/* Center student name inside card */
+.card h3 {
+    text-align: center;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 10px 0;
+}
+
+.info { margin-top: 10px; font-weight: normal; text-align: justify; }
+.info p { margin: 5px 0; font-size: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.info button { border: none; background: none; cursor: pointer; color: #0066cc; padding: 0 4px; }
+
+/* Icon lighting colors */
+.icon-session { color: #ff9900; }
+.icon-current { color: #33cc33; }
+.icon-permanent { color: #ff33cc; }
+.icon-phone { color: #0066cc; }
+.icon-facebook { color: #1877f2; }
+.icon-email { color: #ff6600; }
+.icon-blood { color: #cc0000; }
+
+.toast { visibility: hidden; min-width: 220px; margin-left: -110px; background-color: #333; color: #fff; text-align: center; border-radius: 6px; padding: 10px 15px; position: fixed; left: 50%; bottom: 30px; font-size: 14px; z-index: 9999; opacity: 0; transition: opacity 0.4s, bottom 0.4s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.toast.show { visibility: visible; opacity: 1; bottom: 60px; }
+
+    footer {
+    background-color: rgb(43, 51, 70); /* dark navy blue */
+    color: white;
+    text-align: center;
+    padding: 15px 10px;
+    font-size: 14px;
+    border-top: 5px solid rgb(43, 51, 70); /* same as background for seamless look */
+}
+
+@media(max-width: 350px){ .card { width: 90%; } header { flex-direction: column; align-items: flex-start; gap: 10px; } .time { text-align: left; } }
+</style>
+</head>
+<body>
+
+<header>
+   <div class="logo">
+    <img src="https://i.ibb.co/p6ZSf9Yn/photo-2025-03-12-12-06-01.jpg" alt="CSE Logo">
+    <div>
+        <h2>Computer Science & Engineering</h2>
+        <small>Pabna University of Science & Technology</small>
+    </div>
+   </div>
+    <div class="time" id="time"></div>
+</header>
+
+<main>
+    <h1>CSE Department Students</h1>
+    <p>Session: 2023-2024 | Total Students: <span id="total">0</span></p>
+    <div class="search-box">
+        <input type="text" id="search" placeholder="Search by name or roll number....">
+    </div>
+    <div class="cards" id="cards"></div>
+</main>
+
+<footer>
+    <p>© <span id="year"></span> Pabna University of Science & Technology. All rights reserved.</p>
+    <p>Computer Science & Engineering Department.</p>
+</footer>
+
+<div id="toast" class="toast"><i class="fa-solid fa-check"></i> <span id="toast-text"></span></div>
+
+<script>
+const students = [
+    {
+        name: "Dipu Kumar Paul",
+        roll: "240101",
+        session: "2023-2024",
+        currentAddress: " Degree Bottola, Pabna",
+        permanentAddress: "Rajshahi",
+        phone: "01742348823",
+        facebook:"https://www.facebook.com/DipuKumerPaul.CSE.PUST",
+        email:"dipu.240101@s.pust.ac.bd",
+        bloodGroup:"O+",
+        photo: "https://i.ibb.co/rRJtYqtF/517637491-2011148172957000-4255349614134185897-n.jpg"
+    },
+    {
+        name: "Kazi Walid Hasan Muhammad Sahaf",
+        roll: "240102",
+        session: "2023-2024",
+        currentAddress: "Bangla Clinic, Pabna",
+        permanentAddress: "Gaibandha",
+        phone: "01740281963",
+        facebook:"https://www.facebook.com/KaziWalid.CSE.PUST",
+        email:"walid.240102@s.pust.ac.bd",
+        bloodGroup:"B+",
+        photo: "https://i.ibb.co/1t9x2gnZ/walid-519638589-122166574262547741-5397740468659092235-n.jpg"
+    },
+    
+    {
+        name: "Esmail Hossen Rohan",
+        roll: "240103",
+        session: "2023-2024",
+        currentAddress: "Student Hall 1, Pabna",
+        permanentAddress: "Pabna",
+        phone: "01516574220",
+        facebook:"https://www.facebook.com/ehr.rohan.cse.pust",
+        email:"esmail.240103@s.pust.ac.bd",
+        bloodGroup:"A+",
+        photo: "https://i.ibb.co/TMKg3HMW/rohan-530836053-1296130735455631-2893137868533325522-n.jpg"
+    },
+    {
+        name: "Md Mehedi Hasan",
+        roll: "240104",
+        session: "2023-2024",
+        currentAddress: "Homiopathic Mor, Pabna",
+        permanentAddress: "Pabna",
+        phone: "01761624723",
+        facebook:"https://www.facebook.com/MehediHasan.CSE.PUST",
+        email:"mehedi.240104@s.pust.ac.bd",
+        bloodGroup:"B+",
+        photo: "https://i.ibb.co/s9x5QJr8/mehedi-494533306-698094162711356-3787302187350189360-n.jpg"
+    },
+    {
+        name: "Durjoy Ojha",
+        roll: "240105",
+        session: "2023-2024",
+        currentAddress: "Degree Bottola, Pabna",
+        permanentAddress: "Gopalganj",
+        phone: "01611575444",
+        facebook:"https://www.facebook.com/Durjoyojha.CSE.PUST",
+        email:"durjoy.240105@s.pust.ac.bd",
+        bloodGroup:"AB+",
+        photo: "https://i.ibb.co/prPwZ7hw/durjoy-505387112-1028721329454584-6051927268789243432-n.jpg"
+    },
+    {
+        name: "Md Mahmudul Hassan",
+        roll: "240106",
+        session: "2023-2024",
+        currentAddress: "Bangla Clinic, Pabna",
+        permanentAddress: "Dhaka",
+        phone: "01984542782",
+        facebook:"https://www.facebook.com/Md.Mahmudul.Hassan.CSE.PUST",
+        email:"mahmudul.240106@s.pust.ac.bd",
+        bloodGroup:"A+",
+        photo: "https://i.ibb.co/mVtMDWGq/photo-2025-07-21-21-37-23.jpg"
+    },
+    {
+        name: "Md. Shadhin Islam",
+        roll: "240107",
+        session: "2023-2024",
+        currentAddress: "Mohisher Dipo, Pabna",
+        permanentAddress: "Rangpur",
+        phone: "01522124396",
+        facebook:"https://www.facebook.com/ShadhinIslam.CSE.PUST",
+        email:"shadhin.240107@s.pust.ac.bd",
+        bloodGroup:"AB+",
+        photo: "https://i.ibb.co/kgTRgKsG/shadin-475017688-613261171355197-8701664346910978124-n.jpg"
+    },
+    {
+        name: "Roja Tabassum Alam",
+        roll: "240108",
+        session: "2023-2024",
+        currentAddress: "Forida Tower, Pabna",
+        permanentAddress: " Rajshahi",
+        phone: "01610879255",
+        facebook:"https://www.facebook.com/RojaTabassumAlam.CSE.PUST",
+        email:"roja.240108@s.pust.ac.bd",
+        bloodGroup:"A+",
+        photo: "https://i.ibb.co/7xnp1ZT8/roja-532020553-122166550850382975-1309265939700298597-n.jpg"
+    },
+    {
+        name: "Murtaja Saad",
+        roll: "240109",
+        session: "2023-2024",
+        currentAddress: "Monsurabad 1, Pabna",
+        permanentAddress: "Naogaon",
+        phone: "01770998732",
+        facebook:"https://www.facebook.com/saad.murtuja.CSE.PUST",
+        email:"murtaja.240109@s.pust.ac.bd",
+        bloodGroup:"A+",
+        photo: "https://i.ibb.co/07n3rYM/saad-470185895-122128693238516428-2560421507790422905-n.jpg"
+    },
+    {
+        name: "Tawfiq Ullah",
+        roll: "240110",
+        session: "2023-2024",
+        currentAddress: "Mujahid Club, Pabna",
+        permanentAddress: "Jessore",
+        phone: "01866904665",
+        facebook:"https://www.facebook.com/tawfiq.ullah.pust",
+        email:"tawfiqullah.240110@s.pust.ac.bd",
+        bloodGroup:"A+",
+        photo: "https://i.ibb.co/YBQj6HBW/tawfiqullah492130575-122212245386162321-3846307707942823559-n.jpg"
+    },
+    {
+        name: "Joyjit Barua",
+        roll: "240111",
+        session: "2023-2024",
+        currentAddress: "Meril, Pabna",
+        permanentAddress: "Cox's Bazar",
+        phone: "01768225660",
+        facebook:"https://www.facebook.com/joyjit.barua.3",
+        email:"joyjit.240111@s.pust.ac.bd",
+        bloodGroup:"A+",
+        photo: "https://i.ibb.co/G4wk9JTk/joyjit.jpg"
+    },
+    {
+        name: "Md. Shakibul Islam",
+        roll: "240112",
+        session: "2023-2024",
+        currentAddress: "Mohisher Dipo, Pabna",
+        permanentAddress: "Nilphamari",
+        phone: "01703654403",
+        facebook:"https://www.facebook.com/MdShakibulIslam.CSE.PUST",
+        email:"shakibul.240112@s.pust.ac.bd",
+        bloodGroup:"O+",
+        photo: "https://i.ibb.co/pjsw9L0Y/shakibul-518306013-730886763032821-72131379733811018-n.jpg"
+    },
+    {
+        name: "Tijul Kabir Toha",
+        roll: "240113",
+        session: "2023-2024",
+        currentAddress: "Radhanogor, Pabna",
+        permanentAddress: "Tangail",
+        phone: "01627556029",
+        facebook:"https://www.facebook.com/tijul.kabir.CSE.PUST",
+        email:"toha.240113@s.pust.ac.bd",
+        bloodGroup:"A+",
+        photo: "https://i.ibb.co/jP3Ws8Sx/toha523725897-1319779759936079-2265083449803860983-n.jpg"
+    },
+    {
+        name: "Abdullah Talha",
+        roll: "240114",
+        session: "2023-2024",
+        currentAddress: "Bangla Clinic, Pabna",
+        permanentAddress: "Dhaka",
+        phone: "01883449279",
+        facebook:"https://www.facebook.com/abdullah.talha.cse.pust",
+        email:"abdullah.240114@s.pust.ac.bd",
+        bloodGroup:"B+",
+        photo: "https://i.ibb.co/6xQD4q2/talha-492001360-1384797579325544-7425657351407254825-n.jpg"
+    },
+    {
+        name: "MD. Rafiur Rahman",
+        roll: "240115",
+        session: "2023-2024",
+        currentAddress: " Mahtab Tower, Pabna",
+        permanentAddress: "Rajshahi",
+        phone: "01840596943",
+        facebook:"https://www.facebook.com/Rafiur.CSE.PUST",
+        email:"rafiur.240115@s.pust.ac.bd",
+        bloodGroup:"O+",
+        photo: "https://i.ibb.co/3m5BPFSS/yash-532633244-1315165396852491-5635382270527731233-n.jpg"
+    },
+    {
+        name: "Sonchita Shaha Seta",
+        roll: "240116",
+        session: "2023-2024",
+        currentAddress: "Forida Tower, Pabna",
+        permanentAddress: "Naogaon",
+        phone: "01317325354",
+        facebook:"https://www.facebook.com/SonchitaShahaSeta.CSE.PUST",
+        email:"sonchita.240116@s.pust.ac.bd",
+        bloodGroup:"AB+",
+        photo: "https://i.ibb.co/Y4BfyDDH/seta-487113.jpg"
+    },
+    {
+        name: "Upoma Saha",
+        roll: "240117",
+        session: "2023-2024",
+        currentAddress: "Forida Tower, Pabna",
+        permanentAddress: "Tangail",
+        phone: "01727165737",
+        facebook:"https://www.facebook.com/UpomaSaha.CSE.PUST",
+        email:"upoma.240117@s.pust.ac.bd",
+        bloodGroup:"B+",
+        photo: "https://i.ibb.co/x81YcGcx/upoma.jpg"
+    },
+    {
+        name: "Hasin Ishrak Labib",
+        roll: "240118",
+        session: "2023-2024",
+        currentAddress: "Bangla Clinic, Pabna",
+        permanentAddress: "Naogaon",
+        phone: "01763924268",
+        facebook:"https://www.facebook.com/hasinishrak.labib.CSE.PUST",
+        email:"labib.240118@s.pust.ac.bd",
+        bloodGroup:"A+",
+        photo: "https://i.ibb.co/bjZCVrhV/labib-cse.jpg"
+    },
+    {
+        name: "Nahidul Islam Nahid",
+        roll: "240119",
+        session: "2023-2024",
+        currentAddress: "Mahtab Tower, Pabna",
+        permanentAddress: "Sirajgonj",
+        phone: "01794508610",
+        facebook:"https://www.facebook.com/Nahidul.Islam.Nahid.CSE.PUST",
+        email:"nahid.240119@s.pust.ac.bd",
+        bloodGroup:"B+",
+        photo: "https://i.ibb.co/pjfqJt72/nahid.jpg"
+    },
+    {
+        name: "MST. Nishe Khatun",
+        roll: "240120",
+        session: "2023-2024",
+        currentAddress: "Komorpur, Pabna",
+        permanentAddress: "Pabna",
+        phone: "01321107725",
+        facebook:"https://www.facebook.com/jannatara.nishe.CSE.PUST",
+        email:"nishe.240120@s.pust.ac.bd",
+        bloodGroup:"AB+",
+        photo: "https://i.ibb.co/j2jNXch/nishe.jpg"
+    },
+    {
+        name: "Muntashir Kabir",
+        roll: "240121",
+        session: "2023-2024",
+        currentAddress: "Homiopathic Mor, Pabna",
+        permanentAddress: "Kurigram",
+        phone: "01744925839",
+        facebook:"https://www.facebook.com/MdMuntashirKabir.CSE.PUST",
+        email:"muntashir.240121@s.pust.ac.bd",
+        bloodGroup:"A+",
+        photo: "https://i.ibb.co/YJ2dvYj/muntashir.jpg"
+    },
+    {
+        name: "Mahamudul Hasan Badsha",
+        roll: "240122",
+        session: "2023-2024",
+        currentAddress: "Mahtab Tower, Pabna",
+        permanentAddress: "Thakurgaon",
+        phone: "01710205397",
+        facebook:"https://www.facebook.com/Md.MahamudulHasanBadsha.CSE.PUST",
+        email:"mahamudul.240122@s.pust.ac.bd",
+        bloodGroup:"A+",
+        photo: "https://i.ibb.co/fR3vXt3/badsha.jpg"
+    },
+    {
+        name: "Arnob Saha",
+        roll: "240123",
+        session: "2023-2024",
+        currentAddress: "Degree Bottola, Pabna",
+        permanentAddress: "Dhaka",
+        phone: "01516573262",
+        facebook:"https://www.facebook.com/ArnobSaha.PUST.CSE",
+        email:"arnob.240123@s.pust.ac.bd",
+        bloodGroup:"B+",
+        photo: "https://i.ibb.co/GQkGbKv0/arnob.jpg"
+    },
+    {
+        name: "MD. Shahidur Rahman",
+        roll: "240124",
+        session: "2023-2024",
+        currentAddress: "Bangla Clinic, Pabna",
+        permanentAddress: "Jessore",
+        phone: "01533047003",
+        facebook:"https://www.facebook.com/shahidur.CSE.PUST",
+        email:"shahidur.240124@s.pust.ac.bd",
+        bloodGroup:"A+",
+        photo: "https://i.ibb.co/9kJ6Jg9W/shorouv.jpg"
+    },
+    {
+        name: "Saif Muhammad Nasrullah",
+        roll: "240125",
+        session: "2023-2024",
+        currentAddress: "Bangla Clinic, Pabna",
+        permanentAddress: "Rajshahi",
+        phone: "01303836689",
+        facebook:"https://www.facebook.com/SaifMuhammadNasrullah.CSE.PUST",
+        email:"saif.240125@s.pust.ac.bd",
+        bloodGroup:"O+",
+        photo: "https://i.ibb.co/WjPQqp7/saif.jpg"
+    },
+    {
+        name: "Hafizur Rahman Rahat",
+        roll: "240126",
+        session: "2023-2024",
+        currentAddress: "Mohisher Dipo, Pabna",
+        permanentAddress: "Rangpur",
+        phone: "01815161443",
+        facebook:"https://www.facebook.com/hafizurrahman.Rahat.CSE.PUST",
+        email:" hafizur.240126@s.pust.ac.bd",
+        bloodGroup:"O+",
+        photo: "https://i.ibb.co/wZZR4LMT/rahat.jpg"
+    },
+    {
+        name: "Avijit Ghosh",
+        roll: "240127",
+        session: "2023-2024",
+        currentAddress: "Meril, Pabna",
+        permanentAddress: "Satkhira",
+        phone: "01754880840",
+        facebook:"https://www.facebook.com/avijitghosh.CSE.PUST",
+        email:"avijit.240127@s.pust.ac.bd",
+        bloodGroup:"A+",
+        photo: "https://i.ibb.co/33Ndb8J/avijit.jpg"
+    },
+    {
+        name: "Md. Faysal Ahmmed Badhon",
+        roll: "240128",
+        session: "2023-2024",
+        currentAddress: "Mujahid Club, Pabna",
+        permanentAddress: "Narsingdi",
+        phone: "01332490862",
+        facebook:"https://www.facebook.com/mdfaysalahmmed.cse16.pust",
+        email:"faysal.240128@s.pust.ac.bd",
+        bloodGroup:"B-",
+        photo: "https://i.ibb.co/F4VKs5Zq/faysal.jpg.jpg"
+    },
+    {
+        name: "Moriom Khatun",
+        roll: "240129",
+        session: "2023-2024",
+        currentAddress: "Forida Tower, Pabna",
+        permanentAddress: "Chuadanga",
+        phone: "01409375364",
+        facebook:"https://www.facebook.com/moriom.khatun.797020",
+        email:"moriom.240129@s.pust.ac.bd",
+        bloodGroup:"O+",
+        photo: "https://i.ibb.co/fzCw99Vq/moriom.jpg"
+    },
+    {
+        name: "MD. Sohel Rana",
+        roll: "240130",
+        session: "2023-2024",
+        currentAddress: "Mahtab Tower, Pabna",
+        permanentAddress: "Chapai Nowabganj",
+        phone: "01308922809",
+        facebook:"https://www.facebook.com/MdSohelRana.CSE.PUST",
+        email:"sohel.240130@s.pust.ac.bd",
+        bloodGroup:"O+",
+        photo: "https://i.ibb.co/MyTcZ1WW/sohel.jpg"
+    },
+    {
+        name: "Nakiba Tabassum",
+        roll: "240131",
+        session: "2023-2024",
+        currentAddress: "Forida Tower, Pabna",
+        permanentAddress: "Rangpur",
+        phone: "01515637027",
+        facebook:"https://www.facebook.com/NakibaTabassum.CSE.PUST",
+        email:"nakiba.240131@s.pust.ac.bd",
+        bloodGroup:"B+",
+        photo: "https://i.ibb.co/67qSdKSM/nakiba.jpg"
+    },
+    {
+        name: "MD. Nahid Hasan Rafi",
+        roll: "240132",
+        session: "2023-2024",
+        currentAddress: "Mahtab Tower, Pabna",
+        permanentAddress: "Dhaka",
+        phone: "01964927316",
+        facebook:"https://www.facebook.com/NahidHasan.Rafi.CSE.PUST",
+        email:"nahid.240132@s.pust.ac.bd",
+        bloodGroup:"B-",
+        photo: "https://i.ibb.co/HDVnnMBG/rafi.jpg"
+    },
+    {
+        name: "S.M. Luban Mahafuz",
+        roll: "240133",
+        session: "2023-2024",
+        currentAddress: "Bangla Clinic, Pabna",
+        permanentAddress: "Rajshahi",
+        phone: "01755180647",
+        facebook:"https://www.facebook.com/lmahafuz.CSE.PUST",
+        email:"mahafuz.240133@s.pust.ac.bd",
+        bloodGroup:"A+",
+        photo: "https://i.ibb.co/DPvbCcdh/mahfuz.jpg"
+    },
+    {
+        name: "Md. Sabbir Hossain",
+        roll: "240134",
+        session: "2023-2024",
+        currentAddress: "Bangla Clinic, Pabna",
+        permanentAddress: "Rajshahi",
+        phone: "01786981164",
+        facebook:"https://www.facebook.com/MdSabbirHossain.CSE.PUST",
+        email:"sabbir.240134@s.pust.ac.bd",
+        bloodGroup:"B+",
+        photo: "https://i.ibb.co/wNJNB3d8/Whats-App-Image-2025-06-20-at-10-16-53-35485e3c.jpg"
+    },
+    {
+        name: "Mst. Lutfunnahar Keya",
+        roll: "240136",
+        session: "2023-2024",
+        currentAddress: "Forida Tower, Pabna",
+        permanentAddress: "Rajshahi",
+        phone: "01792180905",
+        facebook:"https://www.facebook.com/keyalutfunnahar",
+        email:"lutfunnahar.240136@s.pust.ac.bd",
+        bloodGroup:"B+",
+        photo: "https://i.ibb.co/hFvzT8fp/keya.png"
+    },
+    {
+        name: "Abdullah Al Mahmud",
+        roll: "240137",
+        session: "2023-2024",
+        currentAddress: "Bangla Clinic, Pabna",
+        permanentAddress: "Chittagong",
+        phone: "01743032759",
+        facebook:"https://www.facebook.com/abdullah.al.mahmud.CSE.PUST",
+        email:"abdullah.240137@s.pust.ac.bd",
+        bloodGroup:"B+",
+        photo: "https://i.ibb.co/TDkKQ5Pw/abdullah-al-mahmud.jpg"
+    },
+    {
+        name: "Md Rifatuzzaman",
+        roll: "240138",
+        session: "2023-2024",
+        currentAddress: "Bangla Clinic, Pabna",
+        permanentAddress: "Naogaon",
+        phone: "01778252424",
+        facebook:"https://www.facebook.com/RifatZaman.CSE.PUST",
+        email:"rifatuzzaman.240138@s.pust.ac.bd",
+        bloodGroup:"O+",
+        photo: "https://i.ibb.co/WNmBvk2x/rifat.jpg"
+    },
+    {
+        name: "MST. Fahmida Akter",
+        roll: "240139",
+        session: "2023-2024",
+        currentAddress: "Radhanogor, Pabna",
+        permanentAddress: "Rajshahi",
+        phone: "01795411982",
+        facebook:"https://www.facebook.com/mst.fahmida.akter.517520",
+        email:"fahmida.240139@s.pust.ac.bd",
+        bloodGroup:"O+",
+        photo: ""
+    },
+    {
+        name: "MD. Nafiz Udoowla Nakib",
+        roll: "240140",
+        session: "2023-2024",
+        currentAddress: "Mahtab Tower, Pabna",
+        permanentAddress: "Gaibandha",
+        phone: "01315168075",
+        facebook:"https://www.facebook.com/nafizuddowla.nokib.CSE.PUST",
+        email:"nafiz.240140@s.pust.ac.bd",
+        bloodGroup:"O+",
+        photo: "https://i.ibb.co/gbSctmDF/nakib.jpg"
+    },
+    {
+        name: "Sheikh Shifat",
+        roll: "240141",
+        session: "2023-2024",
+        currentAddress: "Mujahid Club, Pabna",
+        permanentAddress: "Khulna",
+        phone: "01974936945",
+        facebook:"https://www.facebook.com/SheikhShifat.CSE.PUST",
+        email:"shifat.240141@s.pust.ac.bd",
+        bloodGroup:"B+",
+        photo: "https://i.ibb.co/C3WttKXD/shifat.jpg"
+    },
+        {
+        name: "Rafiya Karim",
+        roll: "240142",
+        session: "2023-2024",
+        currentAddress: "Dilalpur, Pabna",
+        permanentAddress: "Pabna",
+        phone: "01839406888",
+        facebook:"https://www.facebook.com/rafiya.karim.92",
+        email:"rafiya.240142@s.pust.ac.bd",
+        bloodGroup:"A+",
+        photo: ""
+    },
+     {
+        name: "Mst. Shajia Tabassum Orthe",
+        roll: "230101",
+        session: "2023-2024",
+        currentAddress: "Forida Tower, Pabna",
+        permanentAddress: "Pabna",
+        phone: "01317577061",
+        facebook:"https://www.facebook.com/MstShajiaTabassumOrthe.CSE.PUST",
+        email:"shajia.230101@s.pust.ac.bd",
+        bloodGroup:"O+",
+        photo: "https://i.ibb.co/whgR6zF0/orthe.jpg"
+    },
+    {
+        name: "Srabony Akter",
+        roll: "230134",
+        session: "2023-2024",
+        currentAddress: "Meril, Pabna",
+        permanentAddress: "Pabna",
+        phone: "01401264038",
+        facebook:"https://www.facebook.com/Srabonyakter.CSE.PUST",
+        email:"srabony.230134@s.pust.ac.bd",
+        bloodGroup:"B+",
+        photo: "https://i.ibb.co/hRBnQZKP/srabony.jpg"
+    },
+
+
+];
+
+function getInitials(name) { return name.split(" ").map(w => w[0]).join("").toUpperCase(); }
+function copyText(text){ navigator.clipboard.writeText(text).then(()=>showToast(`${text} copied`)); }
+function showToast(message){ const toast=document.getElementById("toast"); document.getElementById("toast-text").textContent=message; toast.className="toast show"; setTimeout(()=>{toast.className=toast.className.replace("show","");},2500); }
+
+function renderCards(filter=""){
+    const container=document.getElementById("cards"); container.innerHTML=""; let count=0;
+    students.forEach(s=>{
+        if(s.name.toLowerCase().includes(filter) || s.roll.toLowerCase().includes(filter)){
+            const card=document.createElement("div"); card.className="card";
+            card.innerHTML=s.photo?`<img src="${s.photo}" alt="${s.name}">`:`<div class="initials">${getInitials(s.name)}</div>`;
+            card.innerHTML+=`
+                <h3>${s.name}</h3>
+                <div class="info">
+                    <p><i class="fa-solid fa-id-card"></i> Roll/ID: ${s.roll}</p>
+                    <p><i class="fa-solid fa-graduation-cap icon-session"></i> Session: ${s.session}</p>
+                    <p><i class="fa-solid fa-location-dot icon-current"></i> Current Address: ${s.currentAddress}</p>
+                    <p><i class="fa-solid fa-house icon-permanent"></i> Permanent Address: ${s.permanentAddress}</p>
+                    <p><i class="fa-solid fa-phone icon-phone"></i> Contact Number: ${s.phone} 
+                        <button onclick="copyText('${s.phone}')"><i class="fa-regular fa-copy"></i></button></p>
+                    ${s.facebook?`<p><i class="fa-brands fa-facebook icon-facebook"></i> <a href="${s.facebook}" target="_blank">Facebook Profile</a>
+                        <button onclick="copyText('${s.facebook}')"><i class="fa-regular fa-copy"></i></button></p>`:""}
+                    <p><i class="fa-solid fa-envelope icon-email"></i> Email: ${s.email} 
+                        <button onclick="copyText('${s.email}')"><i class="fa-regular fa-copy"></i></button></p>
+                    <p><i class="fa-solid fa-tint icon-blood"></i> Blood Group: ${s.bloodGroup}</p>
+                </div>`;
+            container.appendChild(card); count++;
+        }
+    });
+    document.getElementById("total").innerText=count;
+}
+
+document.getElementById("search").addEventListener("input",e=>renderCards(e.target.value.toLowerCase()));
+
+function updateTime(){ 
+    const now=new Date(); 
+    document.getElementById('time').innerHTML=now.toLocaleTimeString()+"<br>"+now.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+}
+setInterval(updateTime,1000); 
+updateTime(); 
+renderCards();
+
+// ✅ Auto update footer year
+document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
