@@ -93,7 +93,7 @@ main h1 { margin: 0; color: white; }
     <h1>CSE Department Students</h1>
     <p>Session: 2023-2024 | Total Students: <span id="total">0</span></p>
     <div class="search-box">
-        <input type="text" id="search" placeholder="Search by name or roll number....">
+        <input type="text" id="search" placeholder="Search by name, roll, present or permanent address....">
     </div>
     <div class="cards" id="cards"></div>
 </main>
@@ -635,7 +635,8 @@ function showToast(message){ const toast=document.getElementById("toast"); docum
 function renderCards(filter=""){
     const container=document.getElementById("cards"); container.innerHTML=""; let count=0;
     students.forEach(s=>{
-        if(s.name.toLowerCase().includes(filter) || s.roll.toLowerCase().includes(filter)){
+        if(s.name.toLowerCase().includes(filter) || s.roll.toLowerCase().includes(filter) || s.currentAddress.toLowerCase().includes(filter) ||
+    s.permanentAddress.toLowerCase().includes(filter)){
             const card=document.createElement("div"); card.className="card";
             card.innerHTML=s.photo?`<img src="${s.photo}" alt="${s.name}">`:`<div class="initials">${getInitials(s.name)}</div>`;
             card.innerHTML+=`
